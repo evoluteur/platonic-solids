@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-063933E3C2"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-063933E3C2");
+    </script>
+    <title>Nets - Platonic Solids</title>
+    <link
+      rel="canonical"
+      href="https://evoluteur.github.io/platonic-solids/nets.html"
+    />
+    <meta charset="utf-8" />
+    <meta http-equiv="content-language" content="en" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="apple-touch-icon" href="icon-192.png" />
+    <meta name="theme-color" content="#12122a" />
+    <link href="ps.css" rel="stylesheet" />
+    <script>
+      if ("serviceWorker" in navigator) {
+        addEventListener("load", () =>
+          navigator.serviceWorker.register("sw.js"),
+        );
+      }
+    </script>
+    <meta
+      name="description"
+      content="Printable nets for all five Platonic solids, with fold lines and glue tabs, unfolded so no face overlaps."
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Marcellus"
+    />
+  </head>
+
+  <body onload="initNets()">
+    <header id="header">
+      <div class="links">
+        <a href="index.html">Viewer</a>
+        <a
+          href="https://github.com/evoluteur/platonic-solids"
+          target="_blank"
+          rel="noopener"
+          >GitHub</a
+        >
+      </div>
+      <h1>Platonic <span>Nets</span></h1>
+    </header>
+
+    <p class="intro">
+      Each solid unfolded flat. Solid lines are cuts, dashed lines are folds,
+      and the small trapezoids are glue tabs - one for every pair of edges that
+      meets again when it closes. Print the page, or save a single net as SVG to
+      scale it to whatever size you like. Each unfolding was chosen by searching
+      every spanning tree of the faces for one where no two faces land on top of
+      each other.
+    </p>
+
+    <div class="nets"></div>
+
+    <div class="footer">
+      <p>
+        Platonic Solids is open source on
+        <a
+          href="https://github.com/evoluteur/platonic-solids"
+          target="_blank"
+          rel="noopener"
+          >GitHub</a
+        >
+        with an MIT license.
+      </p>
+      <p>
+        (c) 2026
+        <a href="https://evoluteur.github.io/" target="_blank" rel="noopener"
+          >Olivier Giulieri</a
+        >
+      </p>
+    </div>
+
+    <script src="solids.js"></script>
+    <script src="js/ps.js"></script>
+  </body>
+</html>

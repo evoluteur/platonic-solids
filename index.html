@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-063933E3C2"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-063933E3C2");
+    </script>
+    <title>Platonic Solids - the five, in 3D, with their duals and nets</title>
+    <link rel="canonical" href="https://evoluteur.github.io/platonic-solids/" />
+    <meta charset="utf-8" />
+    <meta http-equiv="content-language" content="en" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="apple-touch-icon" href="icon-192.png" />
+    <meta name="theme-color" content="#12122a" />
+    <link href="ps.css" rel="stylesheet" />
+    <script>
+      if ("serviceWorker" in navigator) {
+        addEventListener("load", () =>
+          navigator.serviceWorker.register("sw.js"),
+        );
+      }
+    </script>
+    <meta
+      name="keywords"
+      content="platonic solids, tetrahedron, cube, hexahedron, octahedron, dodecahedron, icosahedron, polyhedra, dual, net, papercraft, schlafli, euler, dihedral angle, geometry, 3d, svg"
+    />
+    <meta
+      name="description"
+      content="Turn the five Platonic solids in 3D, show their duals, read their measurements, and print the nets to fold your own."
+    />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:url"
+      content="https://evoluteur.github.io/platonic-solids/"
+    />
+    <meta property="og:title" content="Platonic Solids" />
+    <meta
+      property="og:description"
+      content="Turn the five Platonic solids in 3D, show their duals, read their measurements, and print the nets to fold your own."
+    />
+    <meta
+      property="og:image"
+      content="https://raw.githubusercontent.com/evoluteur/platonic-solids/main/ps-app.png"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Platonic Solids" />
+    <meta
+      name="twitter:description"
+      content="Turn the five Platonic solids in 3D, show their duals, and print the nets to fold your own."
+    />
+    <meta
+      name="twitter:image"
+      content="https://raw.githubusercontent.com/evoluteur/platonic-solids/main/ps-app.png"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Marcellus"
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Platonic Solids",
+        "url": "https://evoluteur.github.io/platonic-solids/",
+        "description": "Turn the five Platonic solids in 3D, show their duals, read their measurements, and print the nets to fold your own.",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Any",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "author": {
+          "@type": "Person",
+          "name": "Olivier Giulieri",
+          "url": "https://evoluteur.github.io/"
+        }
+      }
+    </script>
+  </head>
+
+  <body onload="init()">
+    <header id="header">
+      <div class="links">
+        <a href="nets.html">Nets</a>
+        <a
+          href="https://github.com/evoluteur/platonic-solids"
+          target="_blank"
+          rel="noopener"
+          >GitHub</a
+        >
+      </div>
+      <h1>Platonic <span>Solids</span></h1>
+      <nav class="nav"></nav>
+    </header>
+
+    <main>
+      <div>
+        <div class="stage" id="stage"></div>
+        <p class="hint-drag">Drag the solid to turn it</p>
+      </div>
+
+      <div class="panel">
+        <h2 id="pname"></h2>
+        <p class="tagline" id="tagline"></p>
+        <p class="blurb" id="blurb"></p>
+
+        <label>
+          <span>Drawing</span>
+          <select id="mode" onchange="onSelect(this, 'mode')">
+            <option value="shaded">Shaded faces</option>
+            <option value="wire">Wireframe</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Palette</span>
+          <select id="palette" onchange="onSelect(this, 'palette')"></select>
+        </label>
+
+        <label>
+          <span>Background</span>
+          <select id="bg" onchange="onSelect(this, 'bg')"></select>
+        </label>
+
+        <label>
+          <span>Stroke <b id="strokeVal">0.5</b></span>
+          <input
+            type="range"
+            id="stroke"
+            min="0.1"
+            max="2"
+            step="0.1"
+            value="0.5"
+            oninput="onStroke(this)"
+          />
+        </label>
+
+        <label class="check">
+          <input type="checkbox" id="dual" onchange="onCheck(this, 'dual')" />
+          Show the dual inside
+        </label>
+
+        <label class="check">
+          <input
+            type="checkbox"
+            id="vertices"
+            onchange="onCheck(this, 'vertices')"
+          />
+          Mark the vertices
+        </label>
+
+        <label class="check">
+          <input
+            type="checkbox"
+            id="spinning"
+            checked
+            onchange="onCheck(this, 'spinning')"
+          />
+          Turn on its own
+        </label>
+
+        <div class="buttons">
+          <button onclick="downloadSvg()">Save SVG</button>
+          <button onclick="downloadPng()">Save PNG</button>
+        </div>
+
+        <table class="facts" id="facts"></table>
+      </div>
+    </main>
+
+    <div class="footer">
+      <p>
+        There are exactly five, and there is no sixth: at three faces per vertex
+        the angles still leave room to fold, and past a point they add up to a
+        full turn and the corner falls flat. Euclid closes the Elements with the
+        proof.
+      </p>
+      <p>
+        Every face, edge, dual, measurement, and net on this site is computed
+        from the vertex coordinates alone - nothing is drawn by hand, so the
+        numbers and the picture cannot disagree.
+      </p>
+      <p>
+        Platonic Solids is open source on
+        <a
+          href="https://github.com/evoluteur/platonic-solids"
+          target="_blank"
+          rel="noopener"
+          >GitHub</a
+        >
+        with an MIT license. Encourage this project by
+        <a
+          href="https://github.com/sponsors/evoluteur"
+          target="_blank"
+          rel="noopener"
+          >becoming a sponsor</a
+        >.
+      </p>
+      <p>
+        You may also like
+        <a
+          href="https://evoluteur.github.io/sacred-geometry/"
+          target="_blank"
+          rel="noopener"
+          >Sacred Geometry</a
+        >,
+        <a
+          href="https://evoluteur.github.io/healing-frequencies/"
+          target="_blank"
+          rel="noopener"
+          >Healing Frequencies</a
+        >,
+        <a
+          href="https://evoluteur.github.io/binaural-beats/"
+          target="_blank"
+          rel="noopener"
+          >Binaural Beats</a
+        >, and
+        <a
+          href="https://evoluteur.github.io/motivational-numerology/"
+          target="_blank"
+          rel="noopener"
+          >Motivational Numerology</a
+        >.
+      </p>
+      <p>
+        (c) 2026
+        <a href="https://evoluteur.github.io/" target="_blank" rel="noopener"
+          >Olivier Giulieri</a
+        >
+      </p>
+    </div>
+
+    <script src="solids.js"></script>
+    <script src="js/ps.js"></script>
+  </body>
+</html>
