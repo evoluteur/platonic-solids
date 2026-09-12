@@ -39,7 +39,7 @@ Only the vertex coordinates are written down - four points for the tetrahedron, 
 - **Duals** are the convex hull of the face centres, scaled to sit exactly on them.
 - **Measurements** - dihedral angle, circumradius, inradius, midradius - are measured off the geometry, not looked up. They agree with the classical values to six decimals, and V − E + F = 2 for all five.
 - **Nets** are built by walking a spanning tree of the face-adjacency graph and hinging each face into the plane about the edge it shares with its parent. Every root and visit order was searched offline for an unfolding where no two faces land on top of each other; the winning one is recorded per solid.
-- **3D** is a rotation matrix, a perspective divide, and a painter's-algorithm sort, drawn as plain SVG polygons. Back faces are culled - the solids are convex, so a back face is never visible.
+- **3D** is a rotation matrix, a perspective divide, and a painter's-algorithm sort, drawn as plain SVG polygons. Back faces are culled - the solids are convex, so a back face is never visible. No WebGL, no `<canvas>` - it runs in any browser that can draw SVG.
 
 Plain HTML, CSS, and JavaScript, without external dependencies, and a Progressive Web App (PWA): you can install it on your phone or computer from the browser, and it works offline.
 
@@ -49,6 +49,6 @@ Platonic Solids is Open Source at [GitHub](https://github.com/evoluteur/platonic
 
 Encourage this project by [becoming a sponsor](https://github.com/sponsors/evoluteur).
 
-You may also be interested in my other projects [Sacred Geometry](https://github.com/evoluteur/sacred-geometry), [Healing Frequencies](https://github.com/evoluteur/healing-frequencies), [Binaural Beats](https://github.com/evoluteur/binaural-beats), and [Motivational Numerology](https://github.com/evoluteur/motivational-numerology).
+You may also be interested in my other projects [Sacred Geometry](https://github.com/evoluteur/sacred-geometry), [Healing Frequencies](https://github.com/evoluteur/healing-frequencies), [Binaural Beats](https://github.com/evoluteur/binaural-beats), [Cymatics](https://github.com/evoluteur/cymatics), and [Motivational Numerology](https://github.com/evoluteur/motivational-numerology).
 
 (c) 2026 [Olivier Giulieri](https://evoluteur.github.io/)
