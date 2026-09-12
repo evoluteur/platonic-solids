@@ -49,6 +49,6 @@ Platonic Solids is Open Source at [GitHub](https://github.com/evoluteur/platonic
 
 Encourage this project by [becoming a sponsor](https://github.com/sponsors/evoluteur).
 
-You may also be interested in my other projects [Sacred Geometry](https://github.com/evoluteur/sacred-geometry), [Healing Frequencies](https://github.com/evoluteur/healing-frequencies), [Binaural Beats](https://github.com/evoluteur/binaural-beats), [Cymatics](https://github.com/evoluteur/cymatics), and [Motivational Numerology](https://github.com/evoluteur/motivational-numerology).
+You may also be interested in my other projects [Sacred Geometry](https://github.com/evoluteur/sacred-geometry), [Healing Frequencies](https://github.com/evoluteur/healing-frequencies), [Binaural Beats](https://github.com/evoluteur/binaural-beats), [Cymatics](https://github.com/evoluteur/cymatics), [Motivational Numerology](https://github.com/evoluteur/motivational-numerology), and [Archimedean Solids](https://github.com/evoluteur/archimedean-solids).
 
 (c) 2026 [Olivier Giulieri](https://evoluteur.github.io/)
