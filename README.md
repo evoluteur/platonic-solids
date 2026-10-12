@@ -49,6 +49,6 @@ Platonic Solids is Open Source at [GitHub](https://github.com/evoluteur/platonic
 
 Had fun browsing the app? [Buy me a coffee by becoming a sponsor](https://github.com/sponsors/evoluteur).
 
-You may also be interested in my other projects [Sacred Geometry](https://github.com/evoluteur/sacred-geometry), [Mandala Maker](https://github.com/evoluteur/mandala-maker), [Healing Frequencies](https://github.com/evoluteur/healing-frequencies), [Binaural Beats](https://github.com/evoluteur/binaural-beats), [Cymatics](https://github.com/evoluteur/cymatics), [Motivational Numerology](https://github.com/evoluteur/motivational-numerology), and [Archimedean Solids](https://github.com/evoluteur/archimedean-solids). See them all on [Esoterica](https://evoluteur.github.io/esoterica.html).
+You may also be interested in my other projects [Kepler's Cosmic Cup](https://github.com/evoluteur/keplers-cosmic-cup), [Sacred Geometry](https://github.com/evoluteur/sacred-geometry), [Mandala Maker](https://github.com/evoluteur/mandala-maker), [Healing Frequencies](https://github.com/evoluteur/healing-frequencies), [Binaural Beats](https://github.com/evoluteur/binaural-beats), [Cymatics](https://github.com/evoluteur/cymatics), [Motivational Numerology](https://github.com/evoluteur/motivational-numerology), and [Archimedean Solids](https://github.com/evoluteur/archimedean-solids). See them all on [Esoterica](https://evoluteur.github.io/esoterica.html).
 
 (c) 2026 [Olivier Giulieri](https://evoluteur.github.io/)
