@@ -66,8 +66,7 @@ const VERTICES = {
     [-1, -1, 1],
   ],
   cube: () => corners(),
-  octahedron: () =>
-    cyclicSigns(1, 0, 0).filter((p, i, a) => a.indexOf(p) === i),
+  octahedron: () => cyclicSigns(1, 0, 0),
   dodecahedron: () => corners().concat(cyclicSigns(0, 1 / PHI, PHI)),
   icosahedron: () => cyclicSigns(0, 1, PHI),
 };
@@ -231,31 +230,7 @@ const unfold = (verts, faces, root = 0, order = 0) => {
       queue.push(gi);
     });
   }
-  return { polys: placed, hinges: hingeList(faces, adjacency, placed) };
-};
-
-const hingeList = (faces, adjacency, placed) => {
-  const out = [];
-  const seen = new Set();
-  faces.forEach((f, fi) => {
-    adjacency[fi].forEach(({ gi, a, b }) => {
-      const key = fi < gi ? `${fi}-${gi}` : `${gi}-${fi}`;
-      if (seen.has(key)) return;
-      const A = placed[fi][faces[fi].indexOf(a)];
-      const B = placed[fi][faces[fi].indexOf(b)];
-      const A2 = placed[gi][faces[gi].indexOf(a)];
-      const B2 = placed[gi][faces[gi].indexOf(b)];
-      // only a shared edge that stayed shared is a fold line
-      if (
-        Math.hypot(A[0] - A2[0], A[1] - A2[1]) < 1e-6 &&
-        Math.hypot(B[0] - B2[0], B[1] - B2[1]) < 1e-6
-      ) {
-        seen.add(key);
-        out.push([A, B]);
-      }
-    });
-  });
-  return out;
+  return { polys: placed };
 };
 
 /* ------------------------------------------------------- the five solids */
