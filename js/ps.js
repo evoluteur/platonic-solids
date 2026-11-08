@@ -410,7 +410,8 @@ const state = {
   mode: "shaded",
   dual: false,
   vertices: false,
-  spinning: true,
+  // start still for anyone who asked their system for less motion
+  spinning: !matchMedia("(prefers-reduced-motion: reduce)").matches,
   palette: "gold",
   bg: "midnight",
   stroke: 0.5,
@@ -559,6 +560,7 @@ const init = () => {
   );
   fillSelect("palette", PALETTES);
   fillSelect("bg", BACKGROUNDS);
+  $("spinning").checked = state.spinning;
   const stage = $("stage");
   stage.addEventListener("pointerdown", startDrag);
   stage.addEventListener("pointermove", moveDrag);
