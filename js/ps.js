@@ -423,6 +423,8 @@ const fact = (label, value) => {
 };
 
 const setSolid = (id, skipHash) => {
+  // an unknown or empty hash shows the first solid instead of throwing
+  if (!SOLIDS.some((x) => x.id === id)) id = SOLIDS[0].id;
   const s = solidData(id);
   state.id = id;
   $("pname").textContent = s.name;
