@@ -102,14 +102,12 @@ const faceNormal = (verts, face) =>
 
 /* ---------------------------------------------------------------- drawing */
 
+// The elements are created once for a given solid and look (buildSvg); each
+// animation frame only moves them (paintSvg), so spinning allocates no DOM.
 const buildSvg = (id, o) => {
   const pal = byId(PALETTES, o.palette);
   const bg = byId(BACKGROUNDS, o.bg);
   const s = solidData(id);
-  const scale = (VIEW / 2) * PAD;
-  const yaw = (o.yaw * Math.PI) / 180;
-  const pitch = (o.pitch * Math.PI) / 180;
-  const p2 = projectAll(s.verts, yaw, pitch, scale);
 
   const svg = svgEl("svg", {
     viewBox: `${-VIEW / 2} ${-VIEW / 2} ${VIEW} ${VIEW}`,
@@ -132,93 +130,110 @@ const buildSvg = (id, o) => {
     "stroke-linejoin": "round",
   });
   svg.appendChild(g);
+  const put = (el) => g.appendChild(el);
 
-  // which faces point away from the eye
-  const facing = s.faces.map((f) => {
-    const n = spin(faceNormal(s.verts, f), yaw, pitch);
-    const c = spin(mean(f.map((i) => s.verts[i])), yaw, pitch);
-    return dot(n, [0, 0, CAMERA - c[2]]) > 0;
-  });
-
-  const pointsOf = (face) =>
-    face.map((i) => `${n2(p2[i].x)},${n2(p2[i].y)}`).join(" ");
-
+  const parts = { faces: [], edges: [], dual: [], dots: [] };
   if (o.mode === "shaded") {
-    // painter's algorithm: furthest face first
-    const order = s.faces
-      .map((f, i) => ({
-        i,
-        z: mean(f.map((v) => spin(s.verts[v], yaw, pitch)))[2],
-      }))
-      .sort((a, b) => a.z - b.z);
-    order.forEach(({ i }) => {
-      if (!facing[i]) return; // the solid is convex: a back face is never seen
-      const f = s.faces[i];
-      const n = spin(faceNormal(s.verts, f), yaw, pitch);
-      const light = Math.max(0, dot(n, unit(LIGHT)));
+    parts.faces = s.faces.map((f, i) => {
       const colour =
         pal.stroke === null
           ? `hsl(${Math.round(200 + (140 * i) / s.faces.length)}, 70%, 62%)`
           : pal.stroke;
-      g.appendChild(
+      return put(
         svgEl("polygon", {
-          points: pointsOf(f),
           fill: colour,
-          "fill-opacity": n2(0.22 + 0.7 * light),
           stroke: colour,
           "stroke-opacity": 0.95,
         }),
       );
     });
   } else {
-    Object.keys(s.facesOfEdge).forEach((key) => {
+    parts.edges = Object.keys(s.facesOfEdge).map((key) => {
       const [a, b] = key.split("-").map(Number);
-      const hidden = s.facesOfEdge[key].every((fi) => !facing[fi]);
-      g.appendChild(
-        svgEl("line", {
-          x1: n2(p2[a].x),
-          y1: n2(p2[a].y),
-          x2: n2(p2[b].x),
-          y2: n2(p2[b].y),
-          stroke: pal.stroke || "#8fd3ff",
-          "stroke-opacity": hidden ? 0.22 : 1,
-          "stroke-dasharray": hidden ? "1.4 1.8" : null,
-        }),
-      );
+      const el = put(svgEl("line", { stroke: pal.stroke || "#8fd3ff" }));
+      return { a, b, faces: s.facesOfEdge[key], el };
     });
   }
-
   if (o.dual) {
-    const dp = projectAll(s.dualInscribed, yaw, pitch, scale);
-    s.dualEdges.forEach(([a, b]) => {
-      g.appendChild(
+    parts.dual = s.dualEdges.map(() =>
+      put(
         svgEl("line", {
-          x1: n2(dp[a].x),
-          y1: n2(dp[a].y),
-          x2: n2(dp[b].x),
-          y2: n2(dp[b].y),
           stroke: pal.guide,
           "stroke-opacity": 0.75,
           "stroke-width": n2(o.stroke * 0.7),
         }),
-      );
-    });
+      ),
+    );
+  }
+  if (o.vertices) {
+    parts.dots = s.verts.map(() =>
+      put(svgEl("circle", { fill: pal.stroke || "#8fd3ff", stroke: "none" })),
+    );
+  }
+  svg.parts = parts;
+  paintSvg(svg, id, o);
+  return svg;
+};
+
+const setLine = (el, p, q) => {
+  el.setAttribute("x1", n2(p.x));
+  el.setAttribute("y1", n2(p.y));
+  el.setAttribute("x2", n2(q.x));
+  el.setAttribute("y2", n2(q.y));
+};
+
+const paintSvg = (svg, id, o) => {
+  const s = solidData(id);
+  const { faces, edges, dual, dots } = svg.parts;
+  const scale = (VIEW / 2) * PAD;
+  const yaw = (o.yaw * Math.PI) / 180;
+  const pitch = (o.pitch * Math.PI) / 180;
+  const p2 = projectAll(s.verts, yaw, pitch, scale);
+  const light = unit(LIGHT);
+
+  // which faces turn toward the eye, and how much light they catch
+  const normals = s.faces.map((f) => spin(faceNormal(s.verts, f), yaw, pitch));
+  const facing = s.faces.map((f, i) => {
+    const c = spin(mean(f.map((v) => s.verts[v])), yaw, pitch);
+    return dot(normals[i], [0, 0, CAMERA - c[2]]) > 0;
+  });
+
+  // The solid is convex, so its front faces never overlap on screen: hiding
+  // the back ones is all the depth sorting it needs.
+  faces.forEach((el, i) => {
+    if (!facing[i]) {
+      el.setAttribute("display", "none");
+      return;
+    }
+    el.removeAttribute("display");
+    el.setAttribute(
+      "points",
+      s.faces[i].map((v) => `${n2(p2[v].x)},${n2(p2[v].y)}`).join(" "),
+    );
+    el.setAttribute(
+      "fill-opacity",
+      n2(0.22 + 0.7 * Math.max(0, dot(normals[i], light))),
+    );
+  });
+
+  edges.forEach(({ a, b, faces: around, el }) => {
+    const hidden = around.every((fi) => !facing[fi]);
+    setLine(el, p2[a], p2[b]);
+    el.setAttribute("stroke-opacity", hidden ? 0.22 : 1);
+    if (hidden) el.setAttribute("stroke-dasharray", "1.4 1.8");
+    else el.removeAttribute("stroke-dasharray");
+  });
+
+  if (dual.length) {
+    const dp = projectAll(s.dualInscribed, yaw, pitch, scale);
+    s.dualEdges.forEach(([a, b], i) => setLine(dual[i], dp[a], dp[b]));
   }
 
-  if (o.vertices) {
-    p2.forEach((p) => {
-      g.appendChild(
-        svgEl("circle", {
-          cx: n2(p.x),
-          cy: n2(p.y),
-          r: n2(o.stroke * 1.6 * p.f),
-          fill: pal.stroke || "#8fd3ff",
-          stroke: "none",
-        }),
-      );
-    });
-  }
-  return svg;
+  dots.forEach((el, i) => {
+    el.setAttribute("cx", n2(p2[i].x));
+    el.setAttribute("cy", n2(p2[i].y));
+    el.setAttribute("r", n2(o.stroke * 1.6 * p2[i].f));
+  });
 };
 
 /* ----------------------------------------------------------------- export */
@@ -401,8 +416,18 @@ const state = {
   stroke: 0.5,
 };
 
+// rebuild the elements only when something other than the angle changed
+const LOOK = ["id", "mode", "dual", "vertices", "palette", "bg", "stroke"];
+let drawn = null;
 const render = () => {
-  $("stage").replaceChildren(buildSvg(state.id, state));
+  const look = LOOK.map((k) => state[k]).join("|");
+  const svg = $("stage").firstElementChild;
+  if (svg && look === drawn) {
+    paintSvg(svg, state.id, state);
+  } else {
+    $("stage").replaceChildren(buildSvg(state.id, state));
+    drawn = look;
+  }
 };
 
 const fact = (label, value) => {
