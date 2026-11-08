@@ -1,6 +1,6 @@
 {
   "name": "platonic-solids",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Turn the five Platonic solids in 3D, show their duals, read their measurements, and print the nets to fold your own.",
   "repository": "github:evoluteur/platonic-solids",
   "homepage": "https://evoluteur.github.io/platonic-solids/",
