@@ -1,4 +1,4 @@
-const CACHE = "ps-v1";
+const CACHE = "ps-v2";
 const ASSETS = [
   "./",
   "index.html",
@@ -37,30 +37,41 @@ self.addEventListener("activate", (e) => {
   self.clients.claim();
 });
 
+// Network first for the app's own files, so a new release shows up on the
+// next visit; the cache is only the offline fallback. Fonts never change, so
+// they are served from the cache when present.
 self.addEventListener("fetch", (e) => {
+  if (e.request.method !== "GET") return;
   const url = new URL(e.request.url);
-  const cacheable =
-    url.origin === location.origin ||
+  const own = url.origin === location.origin;
+  const font =
     url.hostname === "fonts.googleapis.com" ||
     url.hostname === "fonts.gstatic.com";
-  if (e.request.method !== "GET" || !cacheable) return;
+  if (!own && !font) return;
+
+  const fetchAndKeep = () =>
+    fetch(e.request).then((res) => {
+      if (res.ok) {
+        const copy = res.clone();
+        caches.open(CACHE).then((c) => c.put(e.request, copy));
+      }
+      return res;
+    });
+  const offline = () =>
+    caches
+      .match(e.request)
+      .then(
+        (cached) =>
+          cached ||
+          (e.request.mode === "navigate"
+            ? caches.match("index.html")
+            : undefined),
+      )
+      .then((res) => res || Response.error());
+
   e.respondWith(
-    caches.match(e.request).then(
-      (cached) =>
-        cached ||
-        fetch(e.request)
-          .then((res) => {
-            if (res.ok) {
-              const copy = res.clone();
-              caches.open(CACHE).then((c) => c.put(e.request, copy));
-            }
-            return res;
-          })
-          .catch(() =>
-            e.request.mode === "navigate"
-              ? caches.match("index.html")
-              : undefined,
-          ),
-    ),
+    font
+      ? caches.match(e.request).then((cached) => cached || fetchAndKeep())
+      : fetchAndKeep().catch(offline),
   );
 });
