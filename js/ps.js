@@ -62,10 +62,12 @@ const solidData = (id) => {
       ),
     );
     const inradius = dot(nrm, s.verts[s.faces[0][0]]);
+    const dualInscribed = s.dualVerts.map((v) => mul(v, inradius));
     cache[id] = {
       ...s,
       facesOfEdge,
-      dualInscribed: s.dualVerts.map((v) => mul(v, inradius)),
+      dualInscribed,
+      dualEdges: edgesOf(hullFaces(dualInscribed)),
     };
   }
   return cache[id];
@@ -187,28 +189,19 @@ const buildSvg = (id, o) => {
   }
 
   if (o.dual) {
-    const d = solidData(id);
-    const dp = projectAll(d.dualInscribed, yaw, pitch, scale);
-    const dualFaces = hullFaces(d.dualInscribed);
-    const drawn = new Set();
-    dualFaces.forEach((f) => {
-      f.forEach((a, i) => {
-        const b = f[(i + 1) % f.length];
-        const key = a < b ? `${a}-${b}` : `${b}-${a}`;
-        if (drawn.has(key)) return;
-        drawn.add(key);
-        g.appendChild(
-          svgEl("line", {
-            x1: n2(dp[a].x),
-            y1: n2(dp[a].y),
-            x2: n2(dp[b].x),
-            y2: n2(dp[b].y),
-            stroke: pal.guide,
-            "stroke-opacity": 0.75,
-            "stroke-width": n2(o.stroke * 0.7),
-          }),
-        );
-      });
+    const dp = projectAll(s.dualInscribed, yaw, pitch, scale);
+    s.dualEdges.forEach(([a, b]) => {
+      g.appendChild(
+        svgEl("line", {
+          x1: n2(dp[a].x),
+          y1: n2(dp[a].y),
+          x2: n2(dp[b].x),
+          y2: n2(dp[b].y),
+          stroke: pal.guide,
+          "stroke-opacity": 0.75,
+          "stroke-width": n2(o.stroke * 0.7),
+        }),
+      );
     });
   }
 
